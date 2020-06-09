@@ -11,7 +11,7 @@ using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class Server : MonoBehaviour
+public class Server : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler, IPointerUpHandler, IPointerDownHandler
 {
 
 	public string mytext;
@@ -26,45 +26,51 @@ public class Server : MonoBehaviour
 	
 	private Thread recieveThread;  	
 	
-	private TcpClient recieveClient; 
+	private TcpClient recieveClient;
+
+	private PointerEventData data;
+
+	private static float x;
+	private static float y;
 	
 	public bool isDown = false;
 
-	public void Press()
-	{
-		isDown = true;
-	}
-	
-	public void Release()
-	{
-		isDown = false;
-		Send("\r\n");
-	}
-		
-	
-	void Start () { 
-		
-				
+	private GameObject go;
+
+	private Shift shift;
+
+	private Image im;
+
+	void Start () {
+
+		//Debug.Log("ноль");
 		sendThread = new Thread (new ThreadStart(CreateSendListener)); 		
 		sendThread.IsBackground = true; 		
-		sendThread.Start(); 	
-		
-		
+		sendThread.Start();
+
+		//Debug.Log("раз");
 		recieveThread = new Thread (new ThreadStart(CreateRecieveListener)); 		
 		recieveThread.IsBackground = true; 		
-		recieveThread.Start(); 	
-		
+		recieveThread.Start();
+
+		//Debug.Log("два");
+
+		go = GameObject.Find("keyboard");
+		shift = go.GetComponent<Shift>();
+		im = GetComponent<Image>();
+
 	}  	
 	
 	
 	void Update () {
-
 		if (isDown)
 		{
-			Debug.Log((Input.mousePosition.x - 30) + " ; " + (-1*Input.mousePosition.y+2230)+" ; ");
-			Send((Input.mousePosition.x - 30) + " ; " + (-1*Input.mousePosition.y+2230)+" ;");
+			x= data.pointerCurrentRaycast.worldPosition.x;
+			y= data.pointerCurrentRaycast.worldPosition.y;
+			if(x<1080 && y<2300)
+			Debug.Log((x + 540) + " ; " + (-y+1820)+" ; ");
+			Send((x + 540) + " ; " + (-y+1820)+" ;");
 		}
-		
 	}  	
 	
 	
@@ -127,5 +133,45 @@ public class Server : MonoBehaviour
 			Debug.Log("Socket exception: " + socketException);         
 		} 	
 	}
-	
+
+	public void OnPointerEnter(PointerEventData eventData)
+	{
+		data = eventData;
+		x = eventData.pointerCurrentRaycast.worldPosition.x;
+		y = eventData.pointerCurrentRaycast.worldPosition.y;
+	}
+
+	public void OnPointerExit(PointerEventData eventData)
+	{
+		
+	}
+
+	public void OnPointerClick(PointerEventData eventData)
+	{
+		
+		
+	}
+
+	public void OnPointerUp(PointerEventData eventData)
+	{
+		Debug.Log("Up");
+		isDown = false;
+		Send("\r\n");
+	}
+
+	public void OnPointerDown(PointerEventData eventData)
+	{
+		Debug.Log("Down");
+		isDown = true;
+
+		if (!(Server.x > 10 && Server.y < -275 && Server.x < 100 && Server.y > -400))
+		{
+			if (shift.i == 1)
+			{
+				im.sprite = shift.small;
+				shift.i = 0;
+			}
+		}
+	}
+
 }

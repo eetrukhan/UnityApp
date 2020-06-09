@@ -96,7 +96,12 @@ public class GvrLaserPointer : GvrBasePointer
     {
         LaserVisual.SetDistance(raycastResult.distance);
         isHittingTarget = true;
+        Debug.Log("Raycast"+raycastResult.worldPosition.ToString());
     }
+
+    public override bool Triggering => Input.GetKeyDown("space");
+    public override bool TriggerUp => !Input.GetKeyDown("space");
+    public override bool TriggerDown => Input.GetKeyDown("space");
 
     /// <inheritdoc/>
     public override void OnPointerExit(GameObject previousObject)
