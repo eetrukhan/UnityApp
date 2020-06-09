@@ -1,12 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class TextHelper: MonoBehaviour
 {
-    public Text intext;
+    public TMP_InputField intext;
     private GameObject go;
     private Server server;
    
@@ -21,5 +22,6 @@ public class TextHelper: MonoBehaviour
     void Update()
     {
         intext.text = server.mytext;
+
     }
 }
